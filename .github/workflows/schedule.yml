@@ -11,7 +11,7 @@ permissions:
 jobs:
   build-and-release:
     name: Check, Build, and Release
-    runs-on: macos-13 # Use Intel-based macOS runner
+    runs-on: macos-15-intel # Use Intel-based macOS 15 runner to match main CI
 
     steps:
       - name: Checkout Repository
