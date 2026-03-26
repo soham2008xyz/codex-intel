@@ -130,7 +130,7 @@ async function main() {
             if (mounted) {
                 // Try to detach, don't fail if busy
                 try {
-                    run(`hdiutil detach -force "${MOUNT_POINT}"`);
+                    execSync(`hdiutil detach -force "${MOUNT_POINT}"`);
                 } catch (e) {
                     console.warn("Failed to unmount, ignoring.");
                 }
