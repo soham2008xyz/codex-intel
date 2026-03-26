@@ -56,7 +56,7 @@ jobs:
           VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$MOUNT_POINT/Codex.app/Contents/Info.plist")
           echo "Extracted version: $VERSION"
           # Save the version to output
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Check for Existing Release
         id: check_release
