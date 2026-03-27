@@ -6,8 +6,16 @@ set -e
 CASK_FILE=${1:-"Casks/codex-intel.rb"}
 CASK_TOKEN=$(basename "$CASK_FILE" .rb)
 APP_NAME=${2:-"Codex.app"}
+TAP_NAME="soham2008xyz/codex-rebuilder"
 
 echo "Running tests for $CASK_FILE (token: $CASK_TOKEN)..."
+
+# Get the repo root directory (one level above this script)
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Register the local repo as a Homebrew tap so cask names can be used
+echo "Setting up tap: $TAP_NAME -> $REPO_DIR"
+brew tap "$TAP_NAME" "$REPO_DIR"
 
 # Cleanup function to run on exit, ensuring no state is left behind
 cleanup() {
@@ -23,13 +31,14 @@ cleanup() {
         echo "Cleanup: removing ~/Applications/$APP_NAME..."
         rm -rf "$HOME/Applications/$APP_NAME" || true
     fi
+    brew untap "$TAP_NAME" || true
 }
 trap cleanup EXIT
 
 # 1. Syntax Validation (brew audit)
 echo "[1/4] Auditing syntax with brew..."
 # Strict audit checks for syntax and basic style issues
-if ! brew audit --cask --strict "$CASK_FILE"; then
+if ! brew audit --cask --strict "$CASK_TOKEN"; then
     echo "Audit failed"
     exit 1
 fi
@@ -37,7 +46,7 @@ echo "Audit passed."
 
 # 2. Test Installation
 echo "[2/4] Testing installation..."
-if ! brew install --cask "$CASK_FILE"; then
+if ! brew install --cask "$CASK_TOKEN"; then
     echo "Install failed"
     exit 1
 fi
