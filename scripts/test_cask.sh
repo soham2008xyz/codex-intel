@@ -3,7 +3,8 @@
 # Exit on any error
 set -e
 
-CASK_FILE="Casks/codex-intel.rb"
+CASK_FILE=${1:-"Casks/codex-intel.rb"}
+APP_NAME=${2:-"Codex.app"}
 
 echo "Running tests for $CASK_FILE..."
 
