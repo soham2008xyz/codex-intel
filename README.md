@@ -3,14 +3,14 @@
 [![Daily Build Codex App (Intel)](https://github.com/soham2008xyz/codex-intel/actions/workflows/schedule.yml/badge.svg)](https://github.com/soham2008xyz/codex-intel/actions/workflows/schedule.yml)
 [![Test Homebrew Cask](https://github.com/soham2008xyz/codex-intel/actions/workflows/test.yml/badge.svg)](https://github.com/soham2008xyz/codex-intel/actions/workflows/test.yml)
 
-This repository now ships an unofficial Homebrew cask tap for installing Codex on Intel Macs.
+This repository ships an unofficial Homebrew cask tap for installing Codex on Intel Macs.
 
-Instead of manually rebuilding the app on every release, GitHub Actions now:
+Instead of manually rebuilding the app for Intel on every release, GitHub Actions now:
 
-1. Download the latest official Apple Silicon Codex DMG from OpenAI.
-2. Rebuild it for Intel/AMD64 on an Intel macOS runner.
-3. Publish the converted app as a GitHub release asset.
-4. Update [`Casks/codex-intel.rb`](Casks/codex-intel.rb) so Homebrew installs that release.
+1. Downloads the latest official Apple Silicon Codex DMG from OpenAI.
+2. Rebuilds it for Intel/AMD64 on an Intel macOS runner.
+3. Publishes the converted app as a GitHub release asset.
+4. Updates [`Casks/codex-intel.rb`](Casks/codex-intel.rb) so Homebrew installs that release.
 
 The core automation lives in [`schedule.yml`](.github/workflows/schedule.yml), and cask validation runs in [`test.yml`](.github/workflows/test.yml).
 
