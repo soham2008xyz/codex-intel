@@ -43,8 +43,8 @@ if ! brew uninstall --cask "$CASK_FILE"; then
 fi
 
 # Verify uninstallation was successful
-if [ -d "/Applications/Codex.app" ] || [ -d "$HOME/Applications/Codex.app" ]; then
-    echo "Uninstall failed: Codex.app still exists."
+if [ -d "/Applications/$APP_NAME" ] || [ -d "$HOME/Applications/$APP_NAME" ]; then
+    echo "Uninstall failed: $APP_NAME still exists."
     exit 1
 else
     echo "Uninstallation verified."
