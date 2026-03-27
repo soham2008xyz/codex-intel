@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 const os = require('os');
 
 // Configuration
-const REPO_ROOT = __dirname;
+const REPO_ROOT = path.join(__dirname, "..");
 const MOUNT_POINT = path.join(
     os.tmpdir(),
     'codex_mount_' +
