@@ -6,13 +6,23 @@ set -e
 CASK_FILE=${1:-"Casks/codex-intel.rb"}
 CASK_TOKEN=$(basename "$CASK_FILE" .rb)
 APP_NAME=${2:-"Codex.app"}
-TAP_NAME="soham2008xyz/codex-rebuilder"
 
 echo "Running tests for $CASK_FILE (token: $CASK_TOKEN)..."
 
 # Get the repo root directory (one level above this script)
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Determine tap name:
+# - Allow override via TAP_NAME environment variable.
+# - Prefer GITHUB_REPOSITORY when available.
+# - Fallback to a local, low-collision name based on the repo directory.
+if [ -n "${TAP_NAME:-}" ]; then
+    : # use existing TAP_NAME from environment
+elif [ -n "${GITHUB_REPOSITORY:-}" ]; then
+    TAP_NAME="$GITHUB_REPOSITORY"
+else
+    TAP_NAME="local/$(basename "$REPO_DIR")"
+fi
 # Register the local repo as a Homebrew tap so cask names can be used
 echo "Setting up tap: $TAP_NAME -> $REPO_DIR"
 brew tap "$TAP_NAME" "$REPO_DIR"
