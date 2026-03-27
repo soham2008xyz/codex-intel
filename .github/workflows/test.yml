@@ -24,4 +24,4 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@v4.0.0
 
       - name: Run Cask tests
-        run: ./scripts/test_cask.sh
+        run: bash scripts/test_cask.sh
