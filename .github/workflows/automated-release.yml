@@ -63,10 +63,47 @@ jobs:
       - name: Download Latest Codex.dmg
         id: download
         run: |
-          echo "Downloading latest Codex.dmg..."
-          curl -L -o Codex.dmg "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg"
+          set -euo pipefail
 
-          # Calculate SHA256 hash
+          echo "Downloading latest Codex.dmg..."
+          curl --fail --show-error --location --retry 5 --retry-delay 5 \
+            -o ~/Codex.dmg "https://persistent.oaistatic.com/codex-app-prod/Codex.dmg"
+
+          echo "Download complete. Verifying DMG contents..."
+
+          # Attach the DMG and capture the mount point
+          MOUNT_DIR=$(hdiutil attach -nobrowse -readonly ~/Codex.dmg | awk '/\/Volumes\// {print $3; exit}')
+          if [ -z "${MOUNT_DIR:-}" ]; then
+            echo "Failed to determine DMG mount point."
+            exit 1
+          fi
+
+          echo "DMG mounted at: $MOUNT_DIR"
+
+          # Find the first .app bundle inside the mounted volume
+          APP_PATH=$(find "$MOUNT_DIR" -maxdepth 1 -type d -name "*.app" | head -n 1)
+          if [ -z "${APP_PATH:-}" ]; then
+            echo "No .app bundle found in DMG."
+            hdiutil detach "$MOUNT_DIR" || true
+            exit 1
+          fi
+
+          echo "Found app bundle: $APP_PATH"
+
+          # Verify code signature
+          echo "Verifying code signature with codesign..."
+          codesign --verify --deep --strict --verbose "$APP_PATH"
+
+          # Verify Gatekeeper assessment
+          echo "Verifying app with spctl..."
+          spctl -a -vv "$APP_PATH"
+
+          echo "Code signature and Gatekeeper verification succeeded."
+
+          # Detach the DMG after verification
+          hdiutil detach "$MOUNT_DIR"
+
+          # Calculate SHA256 hash only after successful verification
           DMG_HASH=$(shasum -a 256 Codex.dmg | cut -d' ' -f1)
           echo "Downloaded DMG SHA256: $DMG_HASH"
           echo "dmg_hash=$DMG_HASH" >> $GITHUB_OUTPUT
