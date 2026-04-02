@@ -27,7 +27,7 @@ The core automation lives in [`schedule.yml`](.github/workflows/schedule.yml), a
 Install the tap and the cask from GitHub:
 
 ```bash
-brew tap soham2008xyz/codex-intel
+brew tap soham2008xyz/codex-intel https://github.com/soham2008xyz/codex-intel
 brew install --cask codex-intel
 ```
 
