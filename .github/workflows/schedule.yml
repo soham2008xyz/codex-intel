@@ -56,8 +56,11 @@ jobs:
           # Mount the DMG
           hdiutil attach Codex.dmg -nobrowse -mountpoint "$MOUNT_POINT"
 
-          # Read the version from Info.plist
-          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$MOUNT_POINT/Codex.app/Contents/Info.plist")
+          # Locate the upstream app bundle and read its marketing version.
+          # Some upstream releases omit CFBundleShortVersionString, so the
+          # helper falls back to CFBundleVersion.
+          METADATA=$(node scripts/source_app.js "$MOUNT_POINT")
+          VERSION=$(node -pe 'JSON.parse(process.argv[1]).version' "$METADATA")
           echo "Extracted version: $VERSION"
           # Save the version to output
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const os = require('os');
+const { readPlistValue, readSourceAppMetadata } = require('./source_app');
 
 // Configuration
 const REPO_ROOT = path.join(__dirname, "..");
@@ -103,7 +104,7 @@ async function main() {
         }
 
         try {
-            const appPath = path.join(MOUNT_POINT, 'Codex.app/Contents');
+            const { contentsPath: appPath } = readSourceAppMetadata(MOUNT_POINT);
             const resPath = path.join(appPath, 'Resources');
 
             if (fs.existsSync(path.join(resPath, 'app.asar'))) {
@@ -135,7 +136,7 @@ async function main() {
                     }
                 }
             } else {
-                throw new Error("Could not find Codex.app/Contents/Resources/app.asar in DMG");
+                throw new Error("Could not find an upstream app bundle containing Resources/app.asar in DMG");
             }
         } finally {
             if (mounted) {
@@ -311,18 +312,19 @@ async function main() {
     }
 
     const macOsDir = path.join(targetApp, 'Contents/MacOS');
+    const appExecutable = readPlistValue(localInfoPlist, 'CFBundleExecutable') || 'Codex';
     const electronBin = path.join(macOsDir, 'Electron');
-    const codexOrigBin = path.join(macOsDir, 'Codex.orig');
-    const codexWrapper = path.join(macOsDir, 'Codex');
+    const codexOrigBin = path.join(macOsDir, `${appExecutable}.orig`);
+    const codexWrapper = path.join(macOsDir, appExecutable);
 
     if (fs.existsSync(electronBin)) {
-        // Rename the real binary to Codex.orig
+        // Rename the real binary to match the upstream app's executable name.
         fs.renameSync(electronBin, codexOrigBin);
 
         // Create a wrapper script that launches with --no-sandbox
         const wrapperScript = `#!/bin/bash
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/Codex.orig" --no-sandbox "$@"
+exec "$DIR/${appExecutable}.orig" --no-sandbox "$@"
 `;
         fs.writeFileSync(codexWrapper, wrapperScript);
         fs.chmodSync(codexWrapper, '755');
