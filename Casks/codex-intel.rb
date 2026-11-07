@@ -1,6 +1,6 @@
 cask "codex-intel" do
-  version "26.1103.32239"
-  sha256 "30a9673c8d667baa8e639ad4948b290326659f1732e3befd85177432178fd86c"
+  version "26.1103.41825"
+  sha256 "3cd7c6834b8b82346730188ef2de01616646cc713528d1979ad850ed3a33451a"
 
   url "https://github.com/soham2008xyz/codex-intel/releases/download/#{version}-intel/Codex-Intel.zip"
   name "Codex"
